@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icons\Silkroadr.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Icons\Silkroadr.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>SRO_Installer_Boobies.Program</StartupObject>
@@ -76,6 +77,7 @@
     <Compile Include="Classes\SevenZipExtractor\SevenZipFormat.cs" />
     <Compile Include="Classes\SevenZipExtractor\SevenZipHandle.cs" />
     <Compile Include="Classes\SevenZipExtractor\SevenZipInterface.cs" />
+    <Compile Include="Classes\ShellLink.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -89,19 +91,19 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="App.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -112,56 +114,55 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Silkroadr.ico" />
+    <None Include="Resources\Archive\Silkroad.zip" />
+    <None Include="Resources\Icons\Silkroadr.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\cancel_press.bmp" />
+    <None Include="Resources\Images\cancel_press.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\cancel_normal.bmp" />
+    <None Include="Resources\Images\cancel_normal.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\ok_press.bmp" />
+    <None Include="Resources\Images\ok_press.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\ok_normal.bmp" />
+    <None Include="Resources\Images\ok_normal.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\install_normal.bmp" />
+    <None Include="Resources\Images\install_normal.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\install_press.bmp" />
+    <None Include="Resources\Images\install_press.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\search_normal.bmp" />
+    <None Include="Resources\Images\search_normal.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\search_press.bmp" />
+    <None Include="Resources\Images\search_press.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\start_normal.bmp" />
+    <None Include="Resources\Images\start_normal.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\start_press.bmp" />
+    <None Include="Resources\Images\start_press.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Classes\SevenZipExtractor\x64\x64-7z.dll" />
-    <None Include="Classes\SevenZipExtractor\x86\x86-7z.dll" />
+    <None Include="Resources\Images\bg_1.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\bg_1.bmp" />
+    <None Include="Resources\Images\bg_2.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\bg_2.bmp" />
+    <None Include="Resources\Images\bg_3.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\bg_3.bmp" />
+    <None Include="Resources\Images\install_complete.bmp" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <None Include="Images\install_complete.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Archive\" />
+    <Content Include="Resources\7z\x64_7z.dll" />
+    <Content Include="Resources\7z\x86_7z.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

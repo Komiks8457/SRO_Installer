@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Resources/Silkroad.zip
+/Resources/Archive/Silkroad.zip

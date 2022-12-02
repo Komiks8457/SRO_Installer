@@ -181,6 +181,16 @@ namespace SRO_Installer_Boobies.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Silkroad {
+            get {
+                object obj = ResourceManager.GetObject("Silkroad", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
         internal static System.Drawing.Icon Silkroadr {
