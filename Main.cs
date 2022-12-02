@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SevenZipExtractor;
@@ -12,10 +16,12 @@ namespace SRO_Installer_Boobies
 {
     public partial class Main : Form
     {
+        private string SevenZipDll, MyExecutable;
         private ImageButton InstallBtn, StartBtn, SearchBtn, CancelBtn_1, CancelBtn_2, CancelBtn_3, CompleteBtn;
         private ProgressBarEx InstallProgressBar;
         private Panel Panel_1, Panel_2, Panel_3, Panel_0;
         private Label InstallDirectoryLabel, ExtractingFileLabel;
+        private Dictionary<string, ulong> FileList;
         private const int WM_NCLBUTTONDOWN = 0xA1;
         private const int HT_CAPTION = 0x2;
 
@@ -32,17 +38,18 @@ namespace SRO_Installer_Boobies
 
         private void Main_Load(object sender, EventArgs e)
         {
-            Closing += Main_Closing;
+            FileList = new Dictionary<string, ulong>();
+            
             InstallBtn = ImgBtn(345, 390, Resources.install_normal, Resources.install_press, InstallBtn_MouseClick);
             StartBtn = ImgBtn(345, 390, Resources.start_normal, Resources.start_press, StartBtn_MouseClick);
             SearchBtn = ImgBtn(413, 349, Resources.search_normal, Resources.search_press, SearchBtn_MouseClick);
             CancelBtn_1 = ImgBtn(413, 390, Resources.cancel_normal, Resources.cancel_press, CancelBtn_MouseClick);
             CancelBtn_2 = ImgBtn(413, 390, Resources.cancel_normal, Resources.cancel_press, CancelBtn_MouseClick);
             CancelBtn_3 = ImgBtn(413, 390, Resources.cancel_normal, Resources.cancel_press, CancelBtn_MouseClick);
-            CompleteBtn = ImgBtn(318, 13, Resources.ok_normal, Resources.ok_press, CancelBtn_MouseClick);
-
+            CompleteBtn = ImgBtn(318, 13, Resources.ok_normal, Resources.ok_press, CompleteBtn_MousClick);
+            
             InstallDirectoryLabel = TextLabel(372, 17, 34, 360, @"C:\Program Files (x86)\Silkroad");
-            ExtractingFileLabel = TextLabel(200, 17, 99, 402, "Data.pk2");
+            ExtractingFileLabel = TextLabel(200, 17, 99, 402, "Please wait...");
             
             InstallProgressBar = new ProgressBarEx()
             {
@@ -94,16 +101,10 @@ namespace SRO_Installer_Boobies
             Panel_1.MouseDown += DragMove;
             Panel_2.MouseDown += DragMove;
             Panel_3.MouseDown += DragMove;
+            Closing += Main_Closing;
         }
 
-        private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            try
-            {
-                File.Delete(Path.Combine(InstallDirectoryLabel.Text, "7z.dll"));
-            }
-            catch { /* ignore */ }
-        }
+        private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e) => DeleteSevenZipDll();
 
         private void DragMove(object sender, MouseEventArgs e)
         {
@@ -142,27 +143,57 @@ namespace SRO_Installer_Boobies
             InstallDirectoryLabel.Location = new Point(99, 332);
             ControlUpdateVisibility(Panel_2, false);
             ControlUpdateVisibility(Panel_3, true);
-            
             ExtractZip();
+        }
+
+        private void CompleteBtn_MousClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left) return;
+            using (var process = new Process())
+            {
+                process.StartInfo = new ProcessStartInfo()
+                {
+                    WorkingDirectory = InstallDirectoryLabel.Text,
+                    FileName = MyExecutable
+                };
+                process.Start();
+            }
+            Close();
         }
 
         private async void ExtractZip()
         {
             await Task.Run(() =>
             {
-                var Silkroad = Resources.Silkroad; //<---Your silkroad.zip in resource
-                var SevenZipDll = Path.Combine(InstallDirectoryLabel.Text, "7z.dll");
+                Directory.CreateDirectory(InstallDirectoryLabel.Text);
+                SevenZipDll = Path.Combine(InstallDirectoryLabel.Text, "7z.dll");
                 File.WriteAllBytes(SevenZipDll, IntPtr.Size == 4 ? Resources.x86_7z : Resources.x64_7z);
-                using (var archiveFile = new ArchiveFile(new MemoryStream(Silkroad), SevenZipFormat.Zip, SevenZipDll))
+                using (var archiveFile = new ArchiveFile(new MemoryStream(Resources.Silkroad), SevenZipFormat.Zip, SevenZipDll))
                 {
+                    foreach (var entry in archiveFile.Entries)
+                    {
+                        FileList.Add(entry.FileName, entry.Size);
+                    }
+
                     foreach (var entry in archiveFile.Entries)
                     {
                         ControlTxtUpdate(ExtractingFileLabel, entry.FileName);
                         entry.Extract(Path.Combine(InstallDirectoryLabel.Text, entry.FileName), true, ProgressEventHandler);
+                        
+                        /* check for corrupted extration */
+                        if (entry.IsFolder) continue;
+
+                        if (FileList[entry.FileName] == GetFileSize(Path.Combine(InstallDirectoryLabel.Text, entry.FileName)))
+                            continue;
+
+                        MessageBox.Show(@"Corrupted file found, please re-run the installer.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Close();
                     }
                 }
                 ControlUpdateVisibility(Panel_0, true);
                 ControlEnableDisable(CancelBtn_3, false);
+                CreateShortcut("Silkroad.exe");
+                DeleteSevenZipDll();
             });
         }
 
@@ -242,6 +273,51 @@ namespace SRO_Installer_Boobies
 
             btn.MouseClick += sender;
             return btn;
+        }
+
+        private void DeleteSevenZipDll()
+        {
+            try
+            {
+                File.Delete(SevenZipDll);
+            }
+            catch { /* ignore */ }
+        }
+
+        [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
+        private void CreateShortcut(string executable)
+        {
+            var fullPath = Path.Combine(InstallDirectoryLabel.Text, executable);
+
+            var link = (IShellLink) new ShellLink();
+            
+            link.SetPath(fullPath);
+            link.SetDescription("SROR-Development");
+            link.SetWorkingDirectory(Path.GetDirectoryName(fullPath));
+            
+            var file = (IPersistFile) link;
+            var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            file.Save(Path.Combine(desktopPath, Path.GetFileNameWithoutExtension(fullPath)+".lnk"), false);
+
+            MyExecutable = fullPath;
+        }
+
+        private static ulong GetFileSize(string filepath)
+        {
+            using(var fileStream = File.OpenRead(filepath))
+            {
+                var bytes = new byte[1024];
+                ulong totalBytesRead = 0;
+                int bytesRead;
+
+                do
+                {
+                    bytesRead = fileStream.Read(bytes, 0, bytes.Length);
+                    totalBytesRead += (ulong)bytesRead;
+                } while(bytesRead != 0);
+
+                return totalBytesRead;
+            }
         }
     }
 }
