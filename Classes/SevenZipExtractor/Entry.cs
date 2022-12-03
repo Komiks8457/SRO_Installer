@@ -32,57 +32,46 @@ namespace SevenZipExtractor
         /// Entry size in a archived state
         /// </summary>
         public ulong PackedSize { get; internal set; }
-
         /// <summary>
         /// Date and time of the file (entry) creation
         /// </summary>
         public DateTime CreationTime { get; internal set; }
-
         /// <summary>
         /// Date and time of the last change of the file (entry)
         /// </summary>
         public DateTime LastWriteTime { get; internal set; }
-
         /// <summary>
         /// Date and time of the last access of the file (entry)
         /// </summary>
         public DateTime LastAccessTime { get; internal set; }
-        
         /// <summary>
         /// CRC hash of the entry
         /// </summary>
-        public UInt32 CRC { get; internal set; }
-
+        public uint CRC { get; internal set; }
         /// <summary>
         /// Attributes of the entry
         /// </summary>
-        public UInt32 Attributes { get; internal set; }
-
+        public uint Attributes { get; internal set; }
         /// <summary>
         /// True if entry is encrypted, otherwise false
         /// </summary>
         public bool IsEncrypted { get; internal set; }
-
         /// <summary>
         /// Comment of the entry
         /// </summary>
         public string Comment { get; internal set; }
-
         /// <summary>
         /// Compression method of the entry
         /// </summary>
         public string Method { get; internal set; }
-
         /// <summary>
         /// Host operating system of the entry
         /// </summary>
         public string HostOS { get; internal set; }
-
         /// <summary>
         /// True if there are parts of this file in previous split archive parts
         /// </summary>
         public bool IsSplitBefore { get; set; }
-
         /// <summary>
         /// True if there are parts of this file in next split archive parts
         /// </summary>

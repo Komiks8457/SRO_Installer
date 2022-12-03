@@ -1,9 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
@@ -19,6 +19,7 @@ namespace SRO_Installer_Boobies
     {
         private bool IsExtracting;
         private PictureBox SlideShow;
+        private ulong FileSize, TotalSize;
         private string SevenZipDll, MyExecutable;
         private ImageButton InstallBtn, StartBtn, SearchBtn, CancelBtn_1, CancelBtn_2, CancelBtn_3, CompleteBtn;
         private ProgressBarEx InstallProgressBar;
@@ -195,17 +196,19 @@ namespace SRO_Installer_Boobies
         {
             await Task.Run(() =>
             {
-                IsExtracting = true;
                 Directory.CreateDirectory(InstallDirectoryLabel.Text);
-                SevenZipDll = Path.Combine(InstallDirectoryLabel.Text, "7z.dll");
+                SevenZipDll = Path.Combine(Path.GetTempPath(), "7z.dll");
                 File.WriteAllBytes(SevenZipDll, IntPtr.Size == 4 ? Resources.x86_7z : Resources.x64_7z);
                 using (var archiveFile = new ArchiveFile(new MemoryStream(Resources.Silkroad), SevenZipFormat.Zip, SevenZipDll))
                 {
+                    IsExtracting = true;
+
                     UpdateSlideShow();
 
                     foreach (var entry in archiveFile.Entries)
                     {
                         FileList.Add(entry.FileName, entry.Size);
+                        TotalSize += entry.Size;
                     }
 
                     foreach (var entry in archiveFile.Entries)
@@ -223,19 +226,31 @@ namespace SRO_Installer_Boobies
 
                         Close();
                     }
+
+                    IsExtracting = false;
                 }
+                
                 ControlUpdateVisibility(SlideShow, false);
                 ControlEnableDisable(CancelBtn_3, false);
                 ControlUpdateVisibility(Panel_4, true);
                 CreateShortcut("Silkroad.exe");
                 DeleteSevenZipDll();
-                IsExtracting = false;
+                // I cheat a bit here, force progressbar to full
+                // extraction was completed anyway
+                UpdateProgressBar(100);
             });
         }
 
         private void ProgressEventHandler(object sender, EntryExtractionProgressEventArgs e)
         {
-            UpdateProgressBar((int)(100 * e.Completed / e.Total));
+            // I'm so dumb why I made FileSize += e.Completed while
+            // still extracting XD, that's why I'm getting wrong value
+            if (e.Completed == e.Total)
+            {
+                FileSize += e.Completed;
+                return;
+            }
+            UpdateProgressBar((int)(100 * (e.Completed+FileSize) / TotalSize));
         }
 
         private async void ControlEnableDisable(Control control, bool enable)
