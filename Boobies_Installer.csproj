@@ -7,7 +7,7 @@
     <ProjectGuid>{BBC88D59-2393-41D8-A603-5291D0C25874}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>SRO_Installer_Boobies</RootNamespace>
-    <AssemblyName>SROR_v229</AssemblyName>
+    <AssemblyName>Silkroad_R_Online_v1_230</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -163,6 +163,16 @@
   <ItemGroup>
     <Content Include="Resources\7z\x64_7z.dll" />
     <Content Include="Resources\7z\x86_7z.dll" />
+    <None Include="Resources\Images\img_10.jpg" />
+    <None Include="Resources\Images\img_09.jpg" />
+    <None Include="Resources\Images\img_08.jpg" />
+    <None Include="Resources\Images\img_07.jpg" />
+    <None Include="Resources\Images\img_06.jpg" />
+    <None Include="Resources\Images\img_05.jpg" />
+    <None Include="Resources\Images\img_04.jpg" />
+    <None Include="Resources\Images\img_03.jpg" />
+    <None Include="Resources\Images\img_02.jpg" />
+    <None Include="Resources\Images\img_01.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

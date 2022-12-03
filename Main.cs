@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SevenZipExtractor;
@@ -16,10 +17,12 @@ namespace SRO_Installer_Boobies
 {
     public partial class Main : Form
     {
+        private bool IsExtracting;
+        private PictureBox SlideShow;
         private string SevenZipDll, MyExecutable;
         private ImageButton InstallBtn, StartBtn, SearchBtn, CancelBtn_1, CancelBtn_2, CancelBtn_3, CompleteBtn;
         private ProgressBarEx InstallProgressBar;
-        private Panel Panel_1, Panel_2, Panel_3, Panel_0;
+        private Panel Panel_1, Panel_2, Panel_3, Panel_4;
         private Label InstallDirectoryLabel, ExtractingFileLabel;
         private Dictionary<string, ulong> FileList;
         private const int WM_NCLBUTTONDOWN = 0xA1;
@@ -49,17 +52,44 @@ namespace SRO_Installer_Boobies
             CompleteBtn = ImgBtn(318, 13, Resources.ok_normal, Resources.ok_press, CompleteBtn_MousClick);
             
             InstallDirectoryLabel = TextLabel(372, 17, 34, 360, @"C:\Program Files (x86)\Silkroad");
-            ExtractingFileLabel = TextLabel(200, 17, 99, 402, "Please wait...");
+            ExtractingFileLabel = TextLabel(300, 17, 99, 402, "Please wait...");
             
-            InstallProgressBar = new ProgressBarEx()
+            SlideShow = new PictureBox
+            {
+                Size = new Size(500, 317),
+                Location = new Point(0, 0),
+                BackColor = Color.Transparent
+            };
+
+            InstallProgressBar = new ProgressBarEx
             {
                 Size = new Size(423, 20),
                 BackColor = Color.Transparent,
-                Location = new Point(39, 364),
-                Visible = true
+                Location = new Point(39, 364)
+            };
+            
+            Panel_1 = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Visible = true,
+                BackgroundImage = Resources.bg_1
             };
 
-            Panel_0 = new Panel()
+            Panel_2 = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Visible = false,
+                BackgroundImage = Resources.bg_2
+            };
+
+            Panel_3 = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Visible = false,
+                BackgroundImage = Resources.bg_3
+            };
+
+            Panel_4 = new Panel
             {
                 Dock = DockStyle.None,
                 Visible = false,
@@ -68,43 +98,38 @@ namespace SRO_Installer_Boobies
                 BackgroundImage = Resources.install_complete
             };
 
-            Panel_1 = new Panel()
-            {
-                Dock = DockStyle.Fill,
-                Visible = true,
-                BackgroundImage = Resources.bg_1
-            };
-
-            Panel_2 = new Panel()
-            {
-                Dock = DockStyle.Fill,
-                Visible = false,
-                BackgroundImage = Resources.bg_2
-            };
-
-            Panel_3 = new Panel()
-            {
-                Dock = DockStyle.Fill,
-                Visible = false,
-                BackgroundImage = Resources.bg_3
-            };
-            
             Controls.Add(Panel_1);
             Controls.Add(Panel_2);
             Controls.Add(Panel_3);
 
-            Panel_0.Controls.Add(CompleteBtn);
             Panel_1.Controls.AddRange(new Control[] { CancelBtn_1, InstallBtn });
             Panel_2.Controls.AddRange(new Control[] { CancelBtn_2, StartBtn, SearchBtn, InstallDirectoryLabel });
-            Panel_3.Controls.AddRange(new Control[] { CancelBtn_3, InstallProgressBar, ExtractingFileLabel, Panel_0 });
+            Panel_3.Controls.AddRange(new Control[] { CancelBtn_3, InstallProgressBar, ExtractingFileLabel, Panel_4, SlideShow });
+            Panel_4.Controls.Add(CompleteBtn);
 
             Panel_1.MouseDown += DragMove;
             Panel_2.MouseDown += DragMove;
             Panel_3.MouseDown += DragMove;
+            Panel_4.MouseDown += DragMove;
+            SlideShow.MouseDown += DragMove;
+
+            InstallDirectoryLabel.MouseDown += DragMove;
+            ExtractingFileLabel.MouseDown += DragMove;
+            InstallProgressBar.MouseDown += DragMove;
+
             Closing += Main_Closing;
         }
 
-        private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e) => DeleteSevenZipDll();
+        private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            DeleteSevenZipDll();
+            if (!IsExtracting) return;
+            try
+            {
+                Directory.Delete(InstallDirectoryLabel.Text);
+            }
+            catch { /* dont force it */ }
+        }
 
         private void DragMove(object sender, MouseEventArgs e)
         {
@@ -133,6 +158,11 @@ namespace SRO_Installer_Boobies
         private void CancelBtn_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
+            if (IsExtracting && MessageBox.Show(@"Would you stop install Silkroad Online?", Text, MessageBoxButtons.OKCancel) == DialogResult.OK)
+            {
+                Close();
+            }
+            else return;
             Close();
         }
 
@@ -151,7 +181,7 @@ namespace SRO_Installer_Boobies
             if (e.Button != MouseButtons.Left) return;
             using (var process = new Process())
             {
-                process.StartInfo = new ProcessStartInfo()
+                process.StartInfo = new ProcessStartInfo
                 {
                     WorkingDirectory = InstallDirectoryLabel.Text,
                     FileName = MyExecutable
@@ -165,11 +195,14 @@ namespace SRO_Installer_Boobies
         {
             await Task.Run(() =>
             {
+                IsExtracting = true;
                 Directory.CreateDirectory(InstallDirectoryLabel.Text);
                 SevenZipDll = Path.Combine(InstallDirectoryLabel.Text, "7z.dll");
                 File.WriteAllBytes(SevenZipDll, IntPtr.Size == 4 ? Resources.x86_7z : Resources.x64_7z);
                 using (var archiveFile = new ArchiveFile(new MemoryStream(Resources.Silkroad), SevenZipFormat.Zip, SevenZipDll))
                 {
+                    UpdateSlideShow();
+
                     foreach (var entry in archiveFile.Entries)
                     {
                         FileList.Add(entry.FileName, entry.Size);
@@ -178,22 +211,25 @@ namespace SRO_Installer_Boobies
                     foreach (var entry in archiveFile.Entries)
                     {
                         ControlTxtUpdate(ExtractingFileLabel, entry.FileName);
+
                         entry.Extract(Path.Combine(InstallDirectoryLabel.Text, entry.FileName), true, ProgressEventHandler);
-                        
-                        /* check for corrupted extration */
+
                         if (entry.IsFolder) continue;
 
-                        if (FileList[entry.FileName] == GetFileSize(Path.Combine(InstallDirectoryLabel.Text, entry.FileName)))
+                        if (FileList[entry.FileName] == GetFileSize(Path.Combine(InstallDirectoryLabel.Text, entry.FileName)).Result)
                             continue;
 
-                        MessageBox.Show(@"Corrupted file found, please re-run the installer.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($@"{entry.FileName} is corrupt, please re-run the installer.", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                         Close();
                     }
                 }
-                ControlUpdateVisibility(Panel_0, true);
+                ControlUpdateVisibility(SlideShow, false);
                 ControlEnableDisable(CancelBtn_3, false);
+                ControlUpdateVisibility(Panel_4, true);
                 CreateShortcut("Silkroad.exe");
                 DeleteSevenZipDll();
+                IsExtracting = false;
             });
         }
 
@@ -246,14 +282,46 @@ namespace SRO_Installer_Boobies
             });
         }
 
+        private async void UpdateSlideShow()
+        {
+            await Task.Run(() =>
+            {
+                var random = new Random();
+
+                var images = new Dictionary<int, Image>
+                {
+                    { 0, Resources.img_01 },
+                    { 1, Resources.img_02 },
+                    { 2, Resources.img_03 },
+                    { 3, Resources.img_04 },
+                    { 4, Resources.img_05 },
+                    { 5, Resources.img_06 },
+                    { 6, Resources.img_07 },
+                    { 7, Resources.img_08 },
+                    { 8, Resources.img_09 },
+                    { 9, Resources.img_10 }
+                };
+
+                while (IsExtracting)
+                {
+                    Invoke((MethodInvoker)delegate
+                    {
+                        SlideShow.Image = images[random.Next(10)];
+                        SlideShow.Refresh();
+                    });
+                    Thread.Sleep(5000);
+                }
+            });
+        }
+
         private static Label TextLabel(int w, int h, int x, int y, string text)
         {
-            return new Label()
+            return new Label
             {
+                Text = text,
                 AutoSize = false,
                 Size = new Size(w, h),
                 Location = new Point(x, y),
-                Text = text,
                 Font = new Font(DefaultFont.FontFamily, 9.75f, FontStyle.Bold),
                 BackColor = Color.Transparent,
                 ForeColor = Color.Aqua
@@ -262,7 +330,7 @@ namespace SRO_Installer_Boobies
 
         private static ImageButton ImgBtn(int x, int y, Image normal, Image press, MouseEventHandler sender)
         {
-            var btn = new ImageButton()
+            var btn = new ImageButton
             {
                 SizeMode = PictureBoxSizeMode.AutoSize,
                 NormalImage = normal,
@@ -297,27 +365,30 @@ namespace SRO_Installer_Boobies
             
             var file = (IPersistFile) link;
             var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            file.Save(Path.Combine(desktopPath, Path.GetFileNameWithoutExtension(fullPath)+".lnk"), false);
+            file.Save(Path.Combine(desktopPath, Path.GetFileNameWithoutExtension(fullPath) + ".lnk"), false);
 
             MyExecutable = fullPath;
         }
 
-        private static ulong GetFileSize(string filepath)
+        private static async Task<ulong> GetFileSize(string filepath)
         {
-            using(var fileStream = File.OpenRead(filepath))
+            return await Task.Run(() =>
             {
-                var bytes = new byte[1024];
-                ulong totalBytesRead = 0;
-                int bytesRead;
-
-                do
+                using(var fileStream = File.OpenRead(filepath))
                 {
-                    bytesRead = fileStream.Read(bytes, 0, bytes.Length);
-                    totalBytesRead += (ulong)bytesRead;
-                } while(bytesRead != 0);
+                    var bytes = new byte[1024];
+                    ulong totalBytesRead = 0;
+                    int bytesRead;
 
-                return totalBytesRead;
-            }
+                    do
+                    {
+                        bytesRead = fileStream.Read(bytes, 0, bytes.Length);
+                        totalBytesRead += (ulong)bytesRead;
+                    } while(bytesRead != 0);
+
+                    return totalBytesRead;
+                }
+            });
         }
     }
 }

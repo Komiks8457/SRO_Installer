@@ -133,6 +133,36 @@
   <data name="cancel_press" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\images\cancel_press.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="img_01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\img_01.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_02" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\img_02.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_03" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\img_03.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_04" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\img_04.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_05" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\img_05.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_06" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\img_06.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_07" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\img_07.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_08" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\img_08.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_09" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\img_09.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="img_10" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Images\img_10.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="install_complete" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\images\install_complete.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
