@@ -163,6 +163,7 @@
   <ItemGroup>
     <Content Include="Resources\7z\x64_7z.dll" />
     <Content Include="Resources\7z\x86_7z.dll" />
+    <Content Include="Resources\Images\install_bar.jpg" />
     <None Include="Resources\Images\img_10.jpg" />
     <None Include="Resources\Images\img_09.jpg" />
     <None Include="Resources\Images\img_08.jpg" />

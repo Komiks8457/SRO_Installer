@@ -213,6 +213,16 @@ namespace SRO_Installer_Boobies.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap install_bar {
+            get {
+                object obj = ResourceManager.GetObject("install_bar", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap install_complete {
             get {
                 object obj = ResourceManager.GetObject("install_complete", resourceCulture);

@@ -63,9 +63,9 @@ namespace SRO_Installer_Boobies
 
             InstallProgressBar = new ProgressBarEx
             {
-                Size = new Size(423, 20),
+                Size = new Size(421, 18),
                 BackColor = Color.Transparent,
-                Location = new Point(39, 364)
+                Location = new Point(40, 365)
             };
             
             Panel_1 = new Panel

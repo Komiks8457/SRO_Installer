@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using SRO_Installer_Boobies.Properties;
 
 namespace SRO_Installer_Boobies.Classes
 {
@@ -22,7 +22,8 @@ namespace SRO_Installer_Boobies.Classes
         protected override void OnPaint(PaintEventArgs e)
         {
             var g = e.Graphics;
-            var brush = new LinearGradientBrush(new Point(0, 0), new Point(0, 1), BarColor1, BarColor2);
+            //var brush = new LinearGradientBrush(new Point(0, 0), new Point(0, 1), BarColor1, BarColor2);
+            var brush = new TextureBrush(Resources.install_bar);
             var percent = (val - min) / (float)(max - min);
             var rect = ClientRectangle;
             // Calculate area for drawing the progress.
