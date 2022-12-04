@@ -21,7 +21,8 @@ namespace SRO_Installer_Boobies
         private PictureBox SlideShow;
         private ulong FileSize, TotalSize;
         private string SevenZipDll, MyExecutable;
-        private ImageButton InstallBtn, StartBtn, SearchBtn, CancelBtn_1, CancelBtn_2, CancelBtn_3, CompleteBtn;
+        private ImageButton InstallBtn, StartBtn, SearchBtn, CompleteBtn;
+        private ImageButton CancelBtn_1, CancelBtn_2, CancelBtn_3;
         private ProgressBarEx InstallProgressBar;
         private Panel Panel_1, Panel_2, Panel_3, Panel_4;
         private Label InstallDirectoryLabel, ExtractingFileLabel;
@@ -52,7 +53,7 @@ namespace SRO_Installer_Boobies
             CancelBtn_3 = ImgBtn(413, 390, Resources.cancel_normal, Resources.cancel_press, CancelBtn_MouseClick);
             CompleteBtn = ImgBtn(318, 13, Resources.ok_normal, Resources.ok_press, CompleteBtn_MousClick);
             
-            InstallDirectoryLabel = TextLabel(372, 17, 34, 360, @"C:\Program Files (x86)\Silkroad");
+            InstallDirectoryLabel = TextLabel(372, 17, 34, 360, Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + @"\Silkroad");
             ExtractingFileLabel = TextLabel(300, 17, 99, 402, "Please wait...");
             
             SlideShow = new PictureBox
@@ -66,7 +67,8 @@ namespace SRO_Installer_Boobies
             {
                 Size = new Size(421, 18),
                 BackColor = Color.Transparent,
-                Location = new Point(40, 365)
+                Location = new Point(40, 365),
+                ProgressBarImage = Resources.install_bar
             };
             
             Panel_1 = new Panel
@@ -159,11 +161,16 @@ namespace SRO_Installer_Boobies
         private void CancelBtn_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
-            if (IsExtracting && MessageBox.Show(@"Would you stop install Silkroad Online?", Text, MessageBoxButtons.OKCancel) == DialogResult.OK)
+
+            if (IsExtracting)
             {
-                Close();
+                if (MessageBox.Show(@"Would you stop install Silkroad Online?", Text, MessageBoxButtons.OKCancel) == DialogResult.OK)
+                {
+                    Close();
+                }
+                else return;
             }
-            else return;
+
             Close();
         }
 
