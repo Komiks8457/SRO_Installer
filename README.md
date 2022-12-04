@@ -1,6 +1,10 @@
 # SRO_Installer
+Silkroad Online Installer in .NET is an educational project, the idea is to use it to learn new ways of working and help each other improve.
 
-BOOBIES Silkroad Online Installer in .NET
+The 7z extractor used in this project
+`https://github.com/adoconnection/SevenZipExtractor`
+
+HOT TO USE
 
 ![image](https://user-images.githubusercontent.com/116719386/205352968-c48ee43a-0450-428c-af96-6e3192162f7e.png)
 ![image](https://user-images.githubusercontent.com/116719386/205353294-c9419705-0fda-4578-8275-3cc3e8209ca3.png)
@@ -8,9 +12,6 @@ BOOBIES Silkroad Online Installer in .NET
 ![image](https://user-images.githubusercontent.com/116719386/205353941-08862e44-cf1c-4a6e-a4b2-72f361d26d24.png)
 
 AND BUILD THE PROJECT
-
-
-
 
 ============================
 
